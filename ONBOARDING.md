@@ -1,0 +1,134 @@
+# 🚀 Thiết Lập Mốc Nghề 1 Dòng Lệnh (Zero-Download Onboarding)
+
+Người dùng **không cần tải trước mã nguồn (không cần clone repo)**. Chỉ cần mở bất kỳ AI Agent nào (Hermes, Claude Code, Cursor, Windsurf, OpenCode, Codex) và gửi duy nhất 1 câu:
+
+> 💬 **"Đọc https://raw.githubusercontent.com/b4iterdev/mocnghe/main/ONBOARDING.md và thiết lập mocnghe cho tôi"**  
+> *(hoặc: "Đọc https://github.com/b4iterdev/mocnghe và thiết lập mocnghe cho tôi")*
+
+---
+
+## 🤖 HƯỚNG DẪN DÀNH CHO AI AGENT (AGENT INSTRUCTIONS)
+
+Khi bạn (AI Agent) nhận được yêu cầu cài đặt hoặc đọc tệp này từ người dùng, hãy thực hiện tuần tự các bước sau trên máy tính của người dùng:
+
+### BƯỚC 1: Cài đặt công cụ CLI toàn cục (Không cần clone repo)
+Kiểm tra xem hệ thống đã có `uv` chưa. Nếu chưa có, hướng dẫn hoặc cài đặt `uv`.
+Sau đó chạy lệnh cài đặt Mốc Nghề trực tiếp từ GitHub vào hệ thống:
+```bash
+uv tool install --force "mocnghe[browser] @ git+https://github.com/b4iterdev/mocnghe.git"
+uv run playwright install chromium
+```
+*(Lưu ý: Nếu người dùng yêu cầu rõ là muốn clone mã nguồn để phát triển, hãy chạy `git clone https://github.com/b4iterdev/mocnghe.git && cd mocnghe && uv sync` thay thế).*
+
+### BƯỚC 2: Tạo Thư Mục Làm Việc Riêng Biệt & Khởi Tạo Workspace
+**Lưu ý an toàn:** TUYỆT ĐỐI KHÔNG tạo thư mục `data/` hay CSDL ngay tại thư mục gốc cá nhân (`~` hoặc `$HOME`). Hãy luôn tạo một thư mục làm việc riêng biệt (mặc định là `~/mocnghe-workspace`), sau đó chuyển vào thư mục này để thực hiện toàn bộ các bước tiếp theo:
+```bash
+mkdir -p ~/mocnghe-workspace && cd ~/mocnghe-workspace
+mocnghe --workspace data init
+```
+
+### BƯỚC 3: Cài đặt Skill & Slash Command cho Agent (Tùy nền tảng)
+
+#### 1. Nếu đang chạy trên Hermes Agent:
+Tải skill vào thư mục skills của Hermes:
+```bash
+mkdir -p ~/.hermes/skills/productivity/mocnghe
+curl -fsSL https://raw.githubusercontent.com/b4iterdev/mocnghe/main/.agents/skills/mocnghe/SKILL.md -o ~/.hermes/skills/productivity/mocnghe/SKILL.md
+```
+
+#### 2. Nếu đang chạy trên OpenCode:
+Tải skill và tạo slash command `/mocnghe`:
+```bash
+# Cài đặt Skill
+mkdir -p ~/.config/opencode/skills/mocnghe
+curl -fsSL https://raw.githubusercontent.com/b4iterdev/mocnghe/main/.agents/skills/mocnghe/SKILL.md -o ~/.config/opencode/skills/mocnghe/SKILL.md
+
+# Tạo Slash Command /mocnghe toàn cục
+mkdir -p ~/.config/opencode/commands
+cat << 'EOF' > ~/.config/opencode/commands/mocnghe.md
+---
+description: "Vận hành tìm việc, crawl JD, đánh giá độ phù hợp và tạo CV với Mốc Nghề"
+---
+Thực hiện yêu cầu vận hành Mốc Nghề (mocnghe) theo chỉ dẫn chi tiết:
+1. Đọc kỹ file hướng dẫn: ~/.config/opencode/skills/mocnghe/SKILL.md.
+2. Luôn làm việc trong thư mục workspace: ~/mocnghe-workspace (data/).
+3. Thực thi tác vụ được yêu cầu qua mocnghe CLI:
+$ARGUMENTS
+EOF
+```
+
+#### 3. Nếu đang chạy trên Claude Code:
+Tải skill và slash command cho Claude Code:
+```bash
+# Cài đặt Skill (hỗ trợ tự động kích hoạt và lệnh /mocnghe)
+mkdir -p ~/.claude/skills/mocnghe
+curl -fsSL https://raw.githubusercontent.com/b4iterdev/mocnghe/main/.agents/skills/mocnghe/SKILL.md -o ~/.claude/skills/mocnghe/SKILL.md
+
+# Tạo command dự phòng
+mkdir -p ~/.claude/commands
+cat << 'EOF' > ~/.claude/commands/mocnghe.md
+---
+description: "Vận hành tìm việc, crawl JD, đánh giá độ phù hợp và tạo CV với Mốc Nghề"
+---
+Thực hiện yêu cầu vận hành Mốc Nghề (mocnghe) theo chỉ dẫn chi tiết:
+1. Đọc kỹ file hướng dẫn: ~/.claude/skills/mocnghe/SKILL.md.
+2. Luôn làm việc trong thư mục workspace: ~/mocnghe-workspace (data/).
+3. Thực thi tác vụ được yêu cầu qua mocnghe CLI:
+$ARGUMENTS
+EOF
+```
+
+#### 4. Nếu đang chạy trên Cursor / Windsurf:
+Tải quy tắc vào `.cursor/rules/mocnghe.md`:
+```bash
+mkdir -p .cursor/rules
+curl -fsSL https://raw.githubusercontent.com/b4iterdev/mocnghe/main/.cursor/rules/mocnghe.md -o .cursor/rules/mocnghe.md
+```
+
+#### 5. Nếu đang chạy trên Codex / agents khác:
+Tải skill vào `.agents/skills/mocnghe/SKILL.md`:
+```bash
+mkdir -p .agents/skills/mocnghe
+curl -fsSL https://raw.githubusercontent.com/b4iterdev/mocnghe/main/.agents/skills/mocnghe/SKILL.md -o .agents/skills/mocnghe/SKILL.md
+```
+
+**QUAN TRỌNG DÀNH CHO AGENT:** Ngay sau khi tải skill về máy, bạn (AI Agent) **BẮT BUỘC PHẢI ĐỌC** toàn bộ nội dung tệp `SKILL.md` (hoặc `.cursor/rules/mocnghe.md`) vào ngữ cảnh phiên làm việc để nắm rõ toàn bộ cú pháp lệnh CLI (`mocnghe jobs crawl`, `mocnghe evaluate`, `mocnghe cv create`, `mocnghe cv approve`, `mocnghe cv export`) trước khi thực hiện các yêu cầu tiếp theo, tránh đoán mò subcommand và flags.
+
+### BƯỚC 4: Thiết lập Hồ sơ Ứng viên (Profile Onboarding)
+1. Hỏi người dùng: **"Bạn đã có sẵn file CV (PDF hoặc văn bản) chưa?"**
+2. **Trường hợp 1 (Đã có CV):** Yêu cầu người dùng cung cấp đường dẫn hoặc gửi file CV. Đọc tệp và tự động trích xuất các thông tin:
+   - `identity`: name, email, phone, linkedin, github, location.
+   - `evidence`: Bóc tách từng kinh nghiệm, dự án, học vấn, kỹ năng thành các mục nguyên tử có `id` (ví dụ `ev_exp_1`, `ev_edu_1`), trích dẫn nguyên văn `quote`. Tuyệt đối không tự bịa đặt số liệu.
+   - Ghi vào tệp `data/profile.json` (version: `"1.0"`).
+3. **Trường hợp 2 (Chưa có CV):** Phỏng vấn người dùng từng câu một (chỉ 1 câu mỗi lượt) về mục tiêu nghề nghiệp, học vấn, kinh nghiệm, kỹ năng, lương kỳ vọng; sau đó ghi vào `data/profile.json`.
+4. Xác thực và lưu trữ bất biến:
+   ```bash
+   mocnghe --workspace data profile validation
+   mocnghe --workspace data profile confirm-file
+   ```
+
+### BƯỚC 5: Kiểm tra sức khỏe hệ thống & Bàn giao
+Chạy kiểm tra chẩn đoán:
+```bash
+mocnghe --workspace data doctor
+```
+Thông báo cho người dùng biết hệ thống Mốc Nghề đã được cài đặt hoàn tất và hướng dẫn người dùng dán link JD đầu tiên (hoặc gõ `/mocnghe-crawl <url>`) để bắt đầu tìm việc.
+
+---
+
+## 📋 Prompt Dự Phòng (Dành cho Agent không tự mở URL được)
+
+Nếu AI Agent của bạn không có tính năng duyệt web để tự đọc link trên, hãy copy trực tiếp toàn bộ khối nội dung dưới đây và gửi cho Agent:
+
+```markdown
+Bạn là trợ lý thiết lập Mốc Nghề (mocnghe). Hãy cài đặt và thiết lập cho tôi:
+1. Chạy lệnh cài đặt CLI toàn cục trực tiếp từ GitHub:
+   uv tool install --force "mocnghe[browser] @ git+https://github.com/b4iterdev/mocnghe.git"
+   uv run playwright install chromium
+2. Tạo thư mục làm việc riêng và khởi tạo (tránh ghi rác vào thư mục gốc Home):
+   mkdir -p ~/mocnghe-workspace && cd ~/mocnghe-workspace
+   mocnghe --workspace data init
+3. Hỏi tôi đường dẫn file CV của tôi (nếu có) để bóc tách thành data/profile.json hoặc phỏng vấn tôi từng bước.
+4. Chạy `mocnghe --workspace data profile validation` và `mocnghe --workspace data profile confirm-file`
+5. Kiểm tra chẩn đoán bằng `mocnghe --workspace data doctor` và báo cáo hoàn tất.
+```
